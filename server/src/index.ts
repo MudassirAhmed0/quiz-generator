@@ -3,7 +3,7 @@ import express, { Application } from "express";
 import helmet, { HelmetOptions } from "helmet";
 import cors, { CorsOptions } from "cors";
 import morgan from "morgan";
-import rateLimit from "express-rate-limit";
+import rateLimit, { ipKeyGenerator } from "express-rate-limit";
 
 import { env } from "./env";
 import generateRouter from "./routes/generate";
@@ -49,7 +49,7 @@ app.use(
         error: { code: "RATE_LIMITED", message: "Too many requests" },
       });
     },
-    keyGenerator: (req) => req.ip || "unknown",
+    keyGenerator: (req) => ipKeyGenerator(req.ip || ""),
   })
 );
 // Routes
