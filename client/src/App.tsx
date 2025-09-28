@@ -4,6 +4,8 @@ import GenerateForm from "./components/GenerateForm";
 import QuizPlayer from "./components/QuizPlayer";
 import ResultCard from "./components/ResultCard";
 import type { GenerateQuizResponse, Difficulty } from "./lib/types";
+import { ToastProvider } from "@radix-ui/react-toast";
+import { ToastProviderLocal } from "./components/ui/use-toast";
 
 type View = "idle" | "playing" | "result";
 
@@ -51,7 +53,12 @@ export default function App() {
         <div className="mx-auto w-full max-w-xl">
           <h1 className="mb-6 text-2xl font-bold">AI Quiz Generator</h1>
 
-          {view === "idle" && <GenerateForm onStart={handleStart} />}
+          {view === "idle" && 
+         
+
+            <GenerateForm onStart={handleStart} />
+        
+          }
 
           {view === "playing" && quizData && (
             <QuizPlayer quiz={quizData} onSubmit={handleSubmit} />
