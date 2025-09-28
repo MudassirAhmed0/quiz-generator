@@ -67,3 +67,5 @@ if (env.NODE_ENV !== "test") {
     console.log(`Server listening on http://localhost:${port}`);
   });
 }
+
+export default app;
