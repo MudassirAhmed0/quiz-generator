@@ -22,27 +22,18 @@ export function renderPrompt(input: QuizGenInput): string {
   const { topic, numQuestions, difficulty } = input;
 
   const schemaInline = `{
-  "topic": "string",
-  "difficulty": "easy|mixed|hard",
-  "questions": [
-    {
-      "id": "string",
-      "type": "mcq_single",
-      "prompt": "string",
-      "options": [
-        { "id": "string", "text": "string" },
-        { "id": "string", "text": "string" },
-        { "id": "string", "text": "string" },
-        { "id": "string", "text": "string" }
-      ],
-      "answer": ["optionIdExactlyOne"],
-      "explanation": "string",
-      "difficulty": "easy|medium|hard",
-      "points": 1
-    }
-  ],
-  "warning": "string (optional)"
-}`;
+    "topic": "string",
+    "difficulty": "easy|mixed|hard",
+    "questions": [
+      {
+        "id": "string",
+        "question": "string",
+        "options": ["string", "string", "string", "string"],
+        "correctIndex": 0-3,
+        "explanation": "string"
+      }
+    ]
+  }`;
 
   return [
     `Generate a quiz for the topic: "${topic}".`,
@@ -86,6 +77,37 @@ export class OpenAIProvider implements LLMProvider {
     try {
       const json = await this.callJsonMode(messagesBase);
       const parsed = safeParseJson(json);
+      // Transform and validate questions
+      if (
+        parsed &&
+        typeof parsed === "object" &&
+        parsed !== null &&
+        Array.isArray((parsed as any).questions)
+      ) {
+        (parsed as any).questions = (parsed as any).questions.map((q: any, idx: number) => ({
+          id: typeof q.id === "string" ? q.id : `q${idx + 1}`,
+          question: q.question || q.prompt || "",
+          options: Array.isArray(q.options)
+            ? q.options.map((opt: any) =>
+                typeof opt === "string"
+                  ? opt
+                  : typeof opt.text === "string"
+                  ? opt.text
+                  : ""
+              )
+            : ["", "", "", ""],
+          correctIndex:
+            typeof q.correctIndex === "number"
+              ? q.correctIndex
+              : Array.isArray(q.answer) && q.options
+              ? q.options.findIndex(
+                  (opt: any) =>
+                    (typeof opt === "object" ? opt.id : undefined) === q.answer?.[0]
+                )
+              : 0,
+          explanation: q.explanation || "",
+        }));
+      }
       const validated = GenerateQuizResponseSchema.parse(parsed);
       if (validated.questions.length !== input.numQuestions) {
         validated.questions = validated.questions.slice(0, input.numQuestions);
@@ -102,6 +124,36 @@ export class OpenAIProvider implements LLMProvider {
       ];
       const json2 = await this.callJsonMode(retry);
       const parsed2 = safeParseJson(json2);
+      if (
+        parsed2 &&
+        typeof parsed2 === "object" &&
+        parsed2 !== null &&
+        Array.isArray((parsed2 as any).questions)
+      ) {
+        (parsed2 as any).questions = (parsed2 as any).questions.map((q: any, idx: number) => ({
+          id: typeof q.id === "string" ? q.id : `q${idx + 1}`,
+          question: q.question || q.prompt || "",
+          options: Array.isArray(q.options)
+            ? q.options.map((opt: any) =>
+                typeof opt === "string"
+                  ? opt
+                  : typeof opt.text === "string"
+                  ? opt.text
+                  : ""
+              )
+            : ["", "", "", ""],
+          correctIndex:
+            typeof q.correctIndex === "number"
+              ? q.correctIndex
+              : Array.isArray(q.answer) && q.options
+              ? q.options.findIndex(
+                  (opt: any) =>
+                    (typeof opt === "object" ? opt.id : undefined) === q.answer?.[0]
+                )
+              : 0,
+          explanation: q.explanation || "",
+        }));
+      }
       const validated2 = GenerateQuizResponseSchema.parse(parsed2);
       if (validated2.questions.length !== input.numQuestions) {
         validated2.questions = validated2.questions.slice(

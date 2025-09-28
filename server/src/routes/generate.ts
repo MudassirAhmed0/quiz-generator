@@ -35,7 +35,11 @@ router.post(
     } catch (err) {
       if (err instanceof ZodError) {
         return res.status(400).json({
-          error: { code: "BAD_REQUEST", message: "Invalid request payload" },
+          error: {
+            code: "BAD_REQUEST",
+            message: "Invalid request payload",
+            details: err.issues, // <-- Zod gives field + issue info
+          },
         });
       }
       if (err instanceof ApiError) {
