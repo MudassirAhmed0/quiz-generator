@@ -4,9 +4,9 @@ export type Difficulty = "easy" | "mixed" | "hard";
 export type QuizQuestion = {
   id: string;
   question: string;
-  options: string[]; // exactly 4
-  correctIndex: number; // 0..3
-  explanation: string; // brief
+  options: [string, string, string, string]; // exactly 4 options
+  correctIndex: 0 | 1 | 2 | 3; // exactly one correct index
+  explanation: string; // brief (<= 240 chars on server)
 };
 
 export type GenerateQuizResponse = {
@@ -15,4 +15,4 @@ export type GenerateQuizResponse = {
   questions: QuizQuestion[];
 };
 
-export type UserAnswers = number[]; // index per question (0..3)
+export type ApiError = { code: string; message: string };
