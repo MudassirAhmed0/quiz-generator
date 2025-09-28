@@ -1,5 +1,5 @@
 // server/src/index.ts
-import express from "express";
+import express, { Application } from "express";
 import helmet from "helmet";
 import cors, { CorsOptions } from "cors";
 import morgan from "morgan";
@@ -9,7 +9,7 @@ import { env } from "./env";
 import generateRouter from "./routes/generate";
 import { errorHandler } from "./utils/error";
 
-const app = express();
+const app: Application = express();
 
 // Behind proxies (rate limiter IPs, etc.)
 app.set("trust proxy", 1);
@@ -46,3 +46,5 @@ app.listen(port, () => {
   // eslint-disable-next-line no-console
   console.log(`Server listening on http://localhost:${port}`);
 });
+
+export default app;
