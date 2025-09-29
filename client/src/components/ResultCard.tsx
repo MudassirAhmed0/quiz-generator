@@ -1,5 +1,4 @@
 // client/src/components/ResultCard.tsx
-import * as React from "react";
 import type { Difficulty, GenerateQuizResponse } from "../lib/types";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
@@ -77,8 +76,8 @@ export default function ResultCard({
       {/* Results list as simple accordion (details/summary) */}
       <div className="grid gap-3">
         {result.items.map((item, idx) => {
-          const sel = item.options.find((o) => o.id === item.selectedOptionId);
-          const cor = item.options.find((o) => o.id === item.correctOptionId);
+          // const sel = item.options.find((o) => o.id === item.selectedOptionId);
+          // const cor = item.options.find((o) => o.id === item.correctOptionId);
           const isCorrect = item.correct;
           return (
             <details

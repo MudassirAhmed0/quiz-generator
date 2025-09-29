@@ -74,7 +74,7 @@ export async function generateQuiz(input: {
     body: JSON.stringify(body),
   });
 
-  return GenerateQuizResponseSchema.parse(json);
+  return GenerateQuizResponseSchema.parse(json) as GenerateQuizResponse;
 }
 
 // Back-compat alias (if earlier code imported generateQuizApi)
